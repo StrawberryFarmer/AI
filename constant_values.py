@@ -10,3 +10,4 @@ sq_size = width // cols #floor division necessary since the size must be an inte
 #config
 chosen_colour = "white"
 not_chosen_colour = "black"
+

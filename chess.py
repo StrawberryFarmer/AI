@@ -8,6 +8,7 @@ class Chess():
     def __init__(self):
         self.board = Board()
         self.drag = Drag()
+        self.current_turn = "white"
 
     def show_background(self, surface):
         for row in range(rows):
@@ -49,3 +50,24 @@ class Chess():
                 rect = (move.final_square.col * sq_size, move.final_square.row * sq_size, sq_size, sq_size)
 
                 pygame.draw.rect(surface, colour, rect)
+
+    def show_last_move(self, surface):
+        if self.board.last_move:
+            initial = self.board.last_move.initial_square
+            final = self.board.last_move.final_square
+
+            for pos in [initial, final]:
+                if (pos.row + pos.col) % 2 == 0:
+                    colour = pygame.Color("#FBFF47") #light yellow
+                else:
+                    colour = pygame.Color("#E0DE00") #dark yellow
+
+                rect = (pos.col * sq_size, pos.row * sq_size, sq_size, sq_size)
+                pygame.draw.rect(surface, colour, rect)
+
+
+    def next_turn(self):
+        if self.current_turn == "black":
+            self.current_turn = "white"
+        else:
+            self.current_turn = "black"

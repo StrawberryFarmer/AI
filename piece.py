@@ -18,7 +18,7 @@ class Piece():
         self.moved = False
     
     def set_skin(self, size=80):
-        self.skin = os.path.join(f"code/images/imgs-{size}px/{self.colour}_{self.name}.png") #builds an f string to match name of image in images folder
+        self.skin = os.path.join(f"images/imgs-{size}px/{self.colour}_{self.name}.png") #builds an f string to match name of image in images folder
 
     def add_move(self, move):
         self.moves.append(move) #add available moves into an array for move validation
@@ -26,9 +26,9 @@ class Piece():
 class Pawn(Piece):
     def __init__(self, colour):
         if colour == "white": #used to identify whether the pawn should move up or down
-            self.direction = 1
-        else: #FIX DIRECTION
             self.direction = -1
+        else:
+            self.direction = 1
         
         super().__init__("pawn", colour, 1) # initialises the attributes from the inherited class
 
@@ -50,4 +50,7 @@ class Queen(Piece):
 
 class King(Piece):
     def __init__(self, colour):
+        self.left_rook = None
+        self.right_rook = None
         super().__init__("king", colour, 9999)
+        

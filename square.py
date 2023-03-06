@@ -3,6 +3,9 @@ class Square():
         self.row = row
         self.col = col
         self.piece = piece
+    
+    def __eq__(self, other): #validating move based on position on the board
+        return self.row == other.row and self.col == other.col
 
     def has_piece(self):
         return self.piece != None #return the piece if the square has one

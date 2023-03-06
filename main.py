@@ -3,6 +3,8 @@ import pygame
 import sys
 from constant_values import *
 from chess import Chess
+from square import Square
+from move import Move
 
 class Main():
     def __init__(self): #initialise the main game window
@@ -19,6 +21,7 @@ class Main():
 
         while True:
             self.chess.show_background(screen) #displays the background squares and their colours
+            self.chess.show_last_move(screen) #displays the last move
             self.chess.show_moves(screen) #displays possible moves
             self.chess.show_pieces(screen) #displays the pieces on the board
 
@@ -35,24 +38,51 @@ class Main():
 
                     if board.squares[clicked_row][clicked_col].has_piece(): #check if the position clicked contains a piece
                         piece = board.squares[clicked_row][clicked_col].piece
-                        board.valid_moves(piece, clicked_row, clicked_col) #gets the valid moves of the piece at this square
-                        drag.save_initial_pos(event.pos) #save the row and column of this piece
-                        drag.drag_piece(piece) #changes attribute to allow moving the piece
-                        
-                        #displays as per the beginning of the game loop, but with updated information
-                        chess.show_background(screen)
-                        chess.show_moves(screen)
-                        chess.show_pieces(screen)
+
+                        if piece.colour == chess.current_turn: #validates which player's turn it is so only they can move the pieces
+                            board.valid_moves(piece, clicked_row, clicked_col) #gets the valid moves of the piece at this square
+                            drag.save_initial_pos(event.pos) #save the row and column of this piece
+                            drag.drag_piece(piece) #changes attribute to allow moving the piece
+                            
+                            #displays as per the beginning of the game loop, but with updated information
+                            chess.show_background(screen)
+                            chess.show_last_move(screen)
+                            chess.show_moves(screen)
+                            chess.show_pieces(screen)
+
+                            #changes the turn
+                            chess.next_turn()
 
                 elif event.type == pygame.MOUSEMOTION: #mouse movement after click
                     if drag.dragging:
                         drag.update_mouse(event.pos) #updates the position of mouse
                         chess.show_background(screen) #draws the squares in the background again
+                        chess.show_last_move(screen) #draws the last move squares
                         chess.show_moves(screen) #draws the moves of the piece again
                         chess.show_pieces(screen) #draws the pieces on the board again
                         drag.update_blit(screen) #updates the image of the piece being dragged based on the position of mouse
 
                 elif event.type == pygame.MOUSEBUTTONUP: #release
+                    if drag.dragging:
+                        drag.update_mouse(event.pos)
+                        #gets the row and column of the position of the mouse
+                        released_row = drag.m_posY // sq_size
+                        released_col = drag.m_posX // sq_size
+
+                        #check if this move is valid based on position of the mouse and piece.moves
+                        initial = Square(drag.initial_row, drag.initial_col)
+                        final = Square(released_row, released_col)
+                        move = Move(initial, final) #the move of the drag (mouse)
+
+                        if board.valid_move_list(drag.piece, move):
+                            board.move(drag.piece, move)
+
+                            #display the changes
+                            chess.show_background(screen)
+                            chess.show_last_move(screen)
+                            chess.show_pieces(screen)
+
+
                     drag.undrag_piece()
 
                 elif event.type == pygame.QUIT: #checks if the user exited the program
